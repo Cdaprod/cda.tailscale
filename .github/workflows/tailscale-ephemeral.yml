@@ -1,0 +1,30 @@
+name: CI with Tailscale
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TS_AUTHKEY: ${{ secrets.TS_AUTHKEY }}?ephemeral=true # Your ephemeral key stored as a GitHub secret
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Tailscale
+      run: |
+        docker run --name tailscale --detach --cap-add=NET_ADMIN --cap-add=SYS_MODULE \
+          --env TS_AUTHKEY=${{ secrets.TS_AUTHKEY }} \
+          --volume /dev/net/tun:/dev/net/tun \
+          tailscale/tailscale:latest
+        docker exec tailscale tailscale up --authkey=${{ secrets.TS_AUTHKEY }}
+
+    - name: Verify Tailscale Connection
+      run: docker exec tailscale tailscale status
+
+    # Add other steps to run your tests or build your project
+
+    - name: Teardown Tailscale
+      if: always()
+      run: docker rm -f tailscale

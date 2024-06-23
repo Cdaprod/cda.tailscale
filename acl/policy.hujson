@@ -1,0 +1,46 @@
+{
+  "groups": {
+    "group:cdaLab": ["davidacannan@gmail.com"],
+    "group:cdaProd": ["davidacannan@gmail.com"]
+  },
+  "hosts": {
+    "cda-desktop": "100.127.193.109",
+    "cda-ios": "100.88.82.52"
+  },
+  "acls": [
+    {
+      "action": "accept",
+      "src": ["group:cdaLab", "group:cdaProd"],
+      "dst": ["tag:homelab:*", "tag:cloudservers:*", "tag:github:*", "tag:kubernetes:*", "tag:googleauth:*", "tag:cda-repo:*", "tag:cda-host:*", "tag:cda-network:*"]
+    },
+    {
+      "action": "accept",
+      "src": ["*"],
+      "dst": ["autogroup:internet:*"]
+    }
+  ],
+  "ssh": [
+    {
+      "action": "accept",
+      "src": ["group:cdaLab"],
+      "dst": ["tag:homelab"],
+      "users": ["root", "admin", "cdaprod", "davidcannan"]
+    },
+    {
+      "action": "accept",
+      "src": ["group:cdaProd"],
+      "dst": ["tag:cloudservers", "tag:cda-repo"],
+      "users": ["root", "cdaprod"]
+    }
+  ],
+  "tagOwners": {
+    "tag:homelab": ["group:cdaLab"],
+    "tag:cda-host": ["group:cdaLab"],
+    "tag:kubernetes": ["group:cdaLab"],
+    "tag:googleauth": ["group:cdaLab"],
+    "tag:github": ["group:cdaProd"],
+    "tag:cda-repo": ["group:cdaProd"],
+    "tag:cloudservers": ["group:cdaProd"],
+    "tag:cda-network": ["group:cdaLab"]
+  }
+}
